@@ -1,0 +1,13 @@
+node_modules/
+dist/
+docs/
+
+# agents
+.agents/
+AGENTS.md
+.claude/
+CLAUDE.md
+npm-debug.log*
+.tmp/
+.cache/
+.vscode/
