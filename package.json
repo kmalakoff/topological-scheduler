@@ -44,11 +44,11 @@
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
-    "@types/node": "^24.10.2",
-    "node-version-use": "^1.9.9",
+    "@types/node": "^25.0.1",
+    "node-version-use": "^2.1.5",
     "pinkie-promise": "^2.0.1",
-    "ts-dev-stack": "^1.21.2",
-    "tsds-config": "^0.2.0"
+    "ts-dev-stack": "^1.21.3",
+    "tsds-config": "^0.2.1"
   },
   "engines": {
     "node": ">=0.8"
