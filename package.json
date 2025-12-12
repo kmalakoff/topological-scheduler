@@ -1,6 +1,6 @@
 {
   "name": "topological-scheduler",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Execute async tasks in dependency order with concurrency control",
   "keywords": [
     "topological",
