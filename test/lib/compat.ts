@@ -3,7 +3,7 @@ export function arrayFind<T>(arr: T[], predicate: (item: T, index: number, arr: 
   if (typeof arr.find === 'function') {
     return arr.find(predicate);
   }
-  for (var i = 0; i < arr.length; i++) {
+  for (let i = 0; i < arr.length; i++) {
     if (predicate(arr[i], i, arr)) return arr[i];
   }
   return undefined;
