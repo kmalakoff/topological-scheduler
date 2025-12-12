@@ -40,7 +40,7 @@
     "version": "tsds version"
   },
   "dependencies": {
-    "topological-sort-group": "^4.0.1"
+    "topological-sort-group": "^4.0.2"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
