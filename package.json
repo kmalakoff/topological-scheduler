@@ -40,7 +40,7 @@
     "version": "tsds version"
   },
   "dependencies": {
-    "topological-sort-group": ">=4.0.0"
+    "topological-sort-group": "^4.0.0"
   },
   "devDependencies": {
     "@types/mocha": "*",
@@ -48,7 +48,7 @@
     "node-version-use": "*",
     "pinkie-promise": "*",
     "ts-dev-stack": "*",
-    "tsds-config": "*"
+    "tsds-config": "^1.0.4"
   },
   "engines": {
     "node": ">=0.8"
