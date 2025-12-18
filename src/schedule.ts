@@ -48,10 +48,7 @@ export default function schedule<T, R>(graph: DependencyGraph<T>, worker: Worker
   }
 
   // Handle empty graph
-  if (totalEntries === 0) {
-    callback(null, results);
-    return;
-  }
+  if (totalEntries === 0) return callback(null, results);
 
   const hasFailedDependency = (id: string): boolean => {
     if (!failDependents) return false;
