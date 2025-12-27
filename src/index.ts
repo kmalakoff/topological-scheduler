@@ -15,11 +15,7 @@ function topologicalScheduler<T, R>(graph: DependencyGraph<T>, worker: WorkerFun
   options = typeof options === 'function' ? {} : ((options || {}) as SchedulerOptions);
 
   if (typeof callback === 'function') return schedule(graph, worker, options, callback);
-  return new Promise((resolve, reject) =>
-    schedule(graph, worker, options, (err, results) => {
-      err ? reject(err) : resolve(results);
-    })
-  );
+  return new Promise((resolve, reject) => schedule(graph, worker, options, (err, results) => (err ? reject(err) : resolve(results))));
 }
 
 export default topologicalScheduler;
