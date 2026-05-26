@@ -6,7 +6,7 @@ export interface SchedulerOptions {
   failDependents?: boolean; // Skip nodes whose dependencies failed
 }
 
-export type WorkerCallback<R> = (err?: Error, result?: R) => void;
+export type WorkerCallback<R> = (err?: Error | null, result?: R) => void;
 
 export type WorkerFunction<T, R> = (item: T, id: string, callback: WorkerCallback<R>) => void;
 
@@ -18,4 +18,4 @@ export interface SchedulerResult<T, R> {
   skipped?: boolean;
 }
 
-export type SchedulerCallback<T, R> = (err?: Error, results?: SchedulerResult<T, R>[]) => void;
+export type SchedulerCallback<T, R> = (err?: Error | null, results?: SchedulerResult<T, R>[]) => void;
