@@ -22,12 +22,12 @@ describe('topological-scheduler (promise)', () => {
       dependencies: { a: [], b: ['a'] },
     };
 
-    const results = await schedule(graph, (_item, id, cb) => cb(null, `result-${id}`), { concurrency: 1 });
+    const results = await schedule(graph, (_item, id, cb) => cb(undefined, `result-${id}`), { concurrency: 1 });
 
     assert.equal(results.length, 2);
     const aResult = arrayFind(results, (r) => r.id === 'a');
     const bResult = arrayFind(results, (r) => r.id === 'b');
-    assert.equal(aResult.result, 'result-a');
-    assert.equal(bResult.result, 'result-b');
+    assert.equal(aResult?.result, 'result-a');
+    assert.equal(bResult?.result, 'result-b');
   });
 });
