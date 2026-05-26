@@ -87,7 +87,7 @@ export default function schedule<T, R>(graph: DependencyGraph<T>, worker: Worker
   const runItem = (id: string): void => {
     const item = nodes[id];
 
-    worker(item, id, (err?: Error, result?: R) => {
+    worker(item, id, (err?: Error | null, result?: R) => {
       const schedulerResult: SchedulerResult<T, R> = { id, item };
       if (err) {
         schedulerResult.error = err;
