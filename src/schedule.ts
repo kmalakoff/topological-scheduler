@@ -48,7 +48,7 @@ export default function schedule<T, R>(graph: DependencyGraph<T>, worker: Worker
   }
 
   // Handle empty graph
-  if (totalEntries === 0) return callback(null, results);
+  if (totalEntries === 0) return callback(undefined, results);
 
   const hasFailedDependency = (id: string): boolean => {
     if (!failDependents) return false;
@@ -78,7 +78,7 @@ export default function schedule<T, R>(graph: DependencyGraph<T>, worker: Worker
     }
 
     if (completedCount === totalEntries) {
-      callback(null, results);
+      callback(undefined, results);
     } else {
       tryStartNext();
     }
@@ -101,7 +101,7 @@ export default function schedule<T, R>(graph: DependencyGraph<T>, worker: Worker
 
   const tryStartNext = (): void => {
     while (ready.length > 0 && runningCount < concurrency) {
-      const id = ready.shift();
+      const id = ready.shift()!;
       if (hasFailedDependency(id)) {
         // Skip this item and mark as skipped
         const item = nodes[id];

@@ -21,7 +21,7 @@ describe('exports .ts', () => {
     const options: SchedulerOptions = { concurrency: 2 };
     assert.ok(options);
 
-    const worker: WorkerFunction<string, string> = (item, _id, cb) => cb(null, item);
+    const worker: WorkerFunction<string, string> = (item, _id, cb) => cb(undefined, item);
     assert.ok(worker);
   });
 });
