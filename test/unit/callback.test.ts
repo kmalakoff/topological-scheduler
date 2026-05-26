@@ -15,13 +15,13 @@ describe('topological-scheduler (callback)', () => {
         graph,
         (_item, id, cb) => {
           order.push(id);
-          cb(null, `done-${id}`);
+          cb(undefined, `done-${id}`);
         },
         { concurrency: 1 },
         (err, results) => {
           assert.equal(err, null);
           assert.deepEqual(order, ['a', 'b', 'c']);
-          assert.equal(results.length, 3);
+          assert.equal((results ?? []).length, 3);
           done();
         }
       );
@@ -35,7 +35,7 @@ describe('topological-scheduler (callback)', () => {
 
       schedule(
         graph,
-        (_item, id, cb) => cb(null, id),
+        (_item, id, cb) => cb(undefined, id),
         { concurrency: 1 },
         (err, results) => {
           assert.equal(err, null);
@@ -57,16 +57,16 @@ describe('topological-scheduler (callback)', () => {
         graph,
         (_item, id, cb) => {
           if (id === 'a') cb(new Error('fail-a'));
-          else cb(null, 'ok');
+          else cb(undefined, 'ok');
         },
         { concurrency: 2 },
         (err, results) => {
           assert.equal(err, null); // No top-level error
-          const aResult = arrayFind(results, (r) => r.id === 'a');
-          const bResult = arrayFind(results, (r) => r.id === 'b');
-          assert.ok(aResult.error);
-          assert.equal(aResult.error.message, 'fail-a');
-          assert.equal(bResult.result, 'ok');
+          const aResult = arrayFind(results ?? [], (r) => r.id === 'a');
+          const bResult = arrayFind(results ?? [], (r) => r.id === 'b');
+          assert.ok(aResult?.error);
+          assert.equal(aResult?.error?.message, 'fail-a');
+          assert.equal(bResult?.result, 'ok');
           done();
         }
       );
@@ -84,7 +84,7 @@ describe('topological-scheduler (callback)', () => {
         (_item, id, cb) => {
           executed.push(id);
           if (id === 'a') cb(new Error('fail'));
-          else cb(null, 'ok');
+          else cb(undefined, 'ok');
         },
         { concurrency: 1, failDependents: true },
         (err, results) => {
@@ -92,8 +92,8 @@ describe('topological-scheduler (callback)', () => {
           // b should be skipped because a failed
           assert.ok(!arrayIncludes(executed, 'b'), 'b should not be executed');
           assert.ok(arrayIncludes(executed, 'c'), 'c should be executed');
-          const bResult = arrayFind(results, (r) => r.id === 'b');
-          assert.ok(bResult.skipped);
+          const bResult = arrayFind(results ?? [], (r) => r.id === 'b');
+          assert.ok(bResult?.skipped);
           done();
         }
       );
@@ -111,7 +111,7 @@ describe('topological-scheduler (callback)', () => {
         (_item, id, cb) => {
           executed.push(id);
           if (id === 'a') cb(new Error('fail'));
-          else cb(null, 'ok');
+          else cb(undefined, 'ok');
         },
         { concurrency: 1 },
         (err, _results) => {
@@ -140,7 +140,7 @@ describe('topological-scheduler (callback)', () => {
           if (currentConcurrent > maxConcurrent) maxConcurrent = currentConcurrent;
           setTimeout(() => {
             currentConcurrent--;
-            cb(null, id);
+            cb(undefined, id);
           }, 10);
         },
         { concurrency: 2 },
@@ -167,7 +167,7 @@ describe('topological-scheduler (callback)', () => {
           if (currentConcurrent > maxConcurrent) maxConcurrent = currentConcurrent;
           setTimeout(() => {
             currentConcurrent--;
-            cb(null, id);
+            cb(undefined, id);
           }, 5);
         },
         {},
@@ -193,7 +193,7 @@ describe('topological-scheduler (callback)', () => {
         graph,
         (_item, id, cb) => {
           order.push(id);
-          cb(null, id);
+          cb(undefined, id);
         },
         { concurrency: 4 },
         (err, _results) => {
@@ -222,7 +222,7 @@ describe('topological-scheduler (callback)', () => {
         (_item, id, cb) => {
           order.push(id);
           setTimeout(() => {
-            cb(null, id);
+            cb(undefined, id);
           }, 5);
         },
         { concurrency: 2 },
@@ -249,14 +249,14 @@ describe('topological-scheduler (callback)', () => {
 
       schedule(
         graph,
-        (item, _id, cb) => cb(null, item.name.toLowerCase()),
+        (item, _id, cb) => cb(undefined, item.name.toLowerCase()),
         { concurrency: 1 },
         (err, results) => {
           assert.equal(err, null);
-          assert.equal(results.length, 1);
-          assert.equal(results[0].id, 'a');
-          assert.deepEqual(results[0].item, { name: 'A' });
-          assert.equal(results[0].result, 'a');
+          assert.equal((results ?? []).length, 1);
+          assert.equal(results?.[0]?.id, 'a');
+          assert.deepEqual(results?.[0]?.item, { name: 'A' });
+          assert.equal(results?.[0]?.result, 'a');
           done();
         }
       );
