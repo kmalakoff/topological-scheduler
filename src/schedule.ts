@@ -101,7 +101,7 @@ export default function schedule<T, R>(graph: DependencyGraph<T>, worker: Worker
 
   const tryStartNext = (): void => {
     while (ready.length > 0 && runningCount < concurrency) {
-      const id = ready.shift()!;
+      const id = ready.shift() as string;
       if (hasFailedDependency(id)) {
         // Skip this item and mark as skipped
         const item = nodes[id];
