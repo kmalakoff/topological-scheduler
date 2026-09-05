@@ -1,1 +1,1 @@
-ignores: ["node-version-use", "ts-dev-stack", "topological-scheduler"]
+ignores: ["topological-scheduler", "node-version-use", "ts-dev-stack"]
