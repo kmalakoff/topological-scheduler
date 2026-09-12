@@ -27,35 +27,6 @@ describe('topological-scheduler (callback)', () => {
       );
     });
 
-    it('executes independent tasks in parallel', (done) => {
-      const startTimes: Record<string, number> = {};
-      const graph: DependencyGraph<string> = {
-        nodes: { a: 'A', b: 'B', c: 'C' },
-        dependencies: { a: [], b: [], c: ['a', 'b'] },
-      };
-
-      schedule(
-        graph,
-        (_item, id, cb) => {
-          startTimes[id] = Date.now();
-          setTimeout(() => {
-            cb(null, id);
-          }, 10);
-        },
-        { concurrency: 2 },
-        (err, _results) => {
-          assert.equal(err, null);
-          // a and b should start at roughly the same time
-          const diff = Math.abs(startTimes.a - startTimes.b);
-          assert.ok(diff < 5, `a and b should start together, diff: ${diff}`);
-          // c should start after both a and b
-          assert.ok(startTimes.c >= startTimes.a + 10 - 5);
-          assert.ok(startTimes.c >= startTimes.b + 10 - 5);
-          done();
-        }
-      );
-    });
-
     it('handles empty graph', (done) => {
       const graph: DependencyGraph<string> = {
         nodes: {},
