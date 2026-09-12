@@ -1,107 +1,62 @@
-## topological-scheduler
+# topological-scheduler
 
-Execute async tasks in dependency order with concurrency control.
+Run asynchronous tasks after their dependencies, with a concurrency limit.
+Worker failures are returned per task instead of rejecting the whole schedule.
 
-# Basic Usage
+```bash
+npm install topological-scheduler
+```
 
-```typescript
-import schedule, { type DependencyGraph } from 'topological-scheduler';
+## Quick start
+
+```ts
+import schedule, { type DependencyGraph, type WorkerFunction } from 'topological-scheduler';
 
 const graph: DependencyGraph<string> = {
-  nodes: { a: 'taskA', b: 'taskB', c: 'taskC', d: 'taskD' },
+  nodes: { fetch: 'fetch data', index: 'build index', report: 'write report' },
   dependencies: {
-    a: [],           // a has no dependencies
-    b: ['a'],        // b depends on a
-    c: ['a'],        // c depends on a
-    d: ['b', 'c']    // d depends on b and c
-  }
+    fetch: [],
+    index: ['fetch'],
+    report: ['index'],
+  },
 };
 
-// Callback style
-schedule(graph, (item, id, cb) => {
-  console.log('Processing:', id, item);
-  cb(null, 'result-' + id);
-}, { concurrency: 2 }, (err, results) => {
-  console.log('Done!', results);
+const worker: WorkerFunction<string, string> = (task, id, done) => {
+  console.log(id, task);
+  done(null, `completed: ${task}`);
+};
+
+const results = await schedule(graph, worker, { concurrency: 2 });
+```
+
+Each result contains `id`, `item`, and either `result` or `error`. Set
+`failDependents: true` to return dependent tasks with `skipped: true` after a
+dependency fails. The default concurrency is `1`.
+
+The same function accepts a final callback:
+
+```ts
+schedule(graph, worker, { concurrency: 2 }, (error, results) => {
+  if (error) throw error;
+  console.log(results);
 });
-
-// Promise style
-const results = await schedule(graph, (item, id, cb) => {
-  console.log('Processing:', id, item);
-  cb(null, 'result-' + id);
-}, { concurrency: 2 });
 ```
 
-# Options
+## Cycles
 
-```typescript
-interface SchedulerOptions {
-  concurrency?: number;      // Max concurrent tasks (default: 1)
-  failDependents?: boolean;  // Skip tasks whose dependencies failed
-}
-```
+The scheduler expects an acyclic graph and does not perform cycle validation.
+Use `topological-sort-group` before scheduling when input may contain cycles:
 
-# Result Structure
-
-```typescript
-interface SchedulerResult<T, R> {
-  id: string;        // Node ID
-  item: T;           // The item value
-  result?: R;        // Worker result (on success)
-  error?: Error;     // Worker error (on failure)
-  skipped?: boolean; // True if skipped due to failDependents
-}
-```
-
-# With topological-sort-group
-
-Use `topological-sort-group` for cycle detection before scheduling:
-
-```typescript
+```ts
 import Graph from 'topological-sort-group';
-import schedule from 'topological-scheduler';
 
-// Build and validate graph
-const graph = Graph.from({
-  nodes: { a: 'A', b: 'B', c: 'C' },
-  dependencies: { a: [], b: ['a'], c: ['b'] }
-});
+const checked = Graph.from(graph);
+const { cycles } = checked.sort();
+if (cycles.length) throw new Error(`Circular dependencies: ${JSON.stringify(cycles)}`);
 
-// Check for cycles first
-const { cycles } = graph.sort();
-if (cycles.length) {
-  throw new Error('Circular dependencies detected: ' + JSON.stringify(cycles));
-}
-
-// Schedule work
-const results = await schedule(
-  graph.toGraph(),
-  (item, id, cb) => {
-    // Your async work here
-    cb(null, 'processed-' + id);
-  },
-  { concurrency: 4 }
-);
+await schedule(checked.toGraph(), worker, { concurrency: 2 });
 ```
 
-# Fail Dependents Mode
+## Documentation
 
-Skip tasks whose dependencies have failed:
-
-```typescript
-const results = await schedule(graph, worker, {
-  concurrency: 2,
-  failDependents: true  // Skip dependents of failed tasks
-});
-
-// Check for skipped tasks
-for (const result of results) {
-  if (result.skipped) {
-    console.log(result.id, 'was skipped due to failed dependency');
-  }
-}
-```
-
-### Documentation
-
-[API Docs](https://kmalakoff.github.io/topological-scheduler/)
+[API documentation](https://kmalakoff.github.io/topological-scheduler/)
